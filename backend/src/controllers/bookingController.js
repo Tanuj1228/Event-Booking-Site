@@ -72,4 +72,17 @@ const bookTickets = async (req, res) => {
     }
 };
 
-module.exports = { lockSeat, bookTickets };
+// ... existing lockSeat and bookTickets functions ...
+
+const getMyBookings = async (req, res) => {
+    try {
+        const bookings = await Booking.find({ user: req.user.id })
+            .populate('event', 'name venue date category')
+            .sort('-createdAt');
+        res.status(200).json(bookings);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { lockSeat, bookTickets, getMyBookings };

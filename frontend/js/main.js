@@ -137,4 +137,44 @@ async function bookTickets(eventId) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', fetchEvents);
+// ... Replace the previous updateNavigation function with this one ...
+
+function updateNavigation() {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+    const nav = document.getElementById('main-nav');
+
+    if (token && user) {
+        let navHtml = `<a href="index.html">Home</a>`;
+        
+        if (user.role === 'admin') {
+            navHtml += `<a href="admin.html">Admin Dashboard</a>`;
+        } else {
+            navHtml += `<a href="profile.html">My Bookings</a>`;
+        }
+        
+        navHtml += `
+            <span style="margin-left: 15px; color: #ccc;">Welcome, ${user.name}</span>
+            <a href="#" id="nav-logout" style="margin-left: 15px; color: #ff4d4d;">Logout</a>
+        `;
+        
+        if (nav) {
+            nav.innerHTML = navHtml;
+            
+            const logoutBtn = document.getElementById('nav-logout');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.reload();
+                });
+            }
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchEvents();
+    updateNavigation();
+});
