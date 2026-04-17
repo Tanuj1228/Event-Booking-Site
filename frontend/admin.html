@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventEase - Admin Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>EventEase Admin</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="#" id="logout-btn">Logout</a>
+        </nav>
+    </header>
+    <main>
+        <div class="form-container">
+            <h2>Create New Event</h2>
+            <form id="create-event-form">
+                <input type="text" id="eventName" placeholder="Event Name" required style="display: block; margin-bottom: 10px; padding: 8px; width: 100%;">
+                <input type="text" id="venue" placeholder="Venue" required style="display: block; margin-bottom: 10px; padding: 8px; width: 100%;">
+                <input type="datetime-local" id="date" required style="display: block; margin-bottom: 10px; padding: 8px; width: 100%;">
+                <input type="text" id="category" placeholder="Category (e.g., Concert, Fest)" required style="display: block; margin-bottom: 10px; padding: 8px; width: 100%;">
+                <input type="number" id="price" placeholder="Ticket Price (Rs.)" required style="display: block; margin-bottom: 10px; padding: 8px; width: 100%;">
+                <input type="number" id="totalSeats" placeholder="Total Seats" required style="display: block; margin-bottom: 10px; padding: 8px; width: 100%;">
+                <button type="submit" style="padding: 10px 15px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 4px;">Create Event</button>
+            </form>
+        </div>
+    </main>
+    <script src="js/admin.js"></script>
+</body>
+</html>
