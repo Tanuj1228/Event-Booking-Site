@@ -10,6 +10,8 @@ const io = new Server(server, {
   cors: { origin: '*' }
 });
 
+app.set('io', io);
+
 connectDB();
 connectRedis();
 

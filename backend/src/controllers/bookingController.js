@@ -1,0 +1,75 @@
+const Event = require('../models/Event');
+const Booking = require('../models/Booking');
+const { redisClient } = require('../config/redis');
+
+const lockSeat = async (req, res) => {
+    const { eventId, seatNumber } = req.body;
+    const userId = req.user.id;
+    const lockKey = `lock:${eventId}:${seatNumber}`;
+
+    try {
+        const isLocked = await redisClient.get(lockKey);
+        if (isLocked && isLocked !== userId) {
+            return res.status(400).json({ message: 'Seat is currently locked by another user' });
+        }
+
+        await redisClient.setEx(lockKey, 300, userId); 
+        
+        const io = req.app.get('io');
+        io.emit('seatUpdate', { eventId, seatNumber, status: 'locked' });
+
+        res.status(200).json({ message: 'Seat locked successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const bookTickets = async (req, res) => {
+    const { eventId, seats, totalAmount } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const event = await Event.findById(eventId);
+        if (!event) return res.status(404).json({ message: 'Event not found' });
+
+        for (let seatNumber of seats) {
+            const lockKey = `lock:${eventId}:${seatNumber}`;
+            const lockedBy = await redisClient.get(lockKey);
+            
+            if (lockedBy !== userId) {
+                return res.status(400).json({ message: `Seat ${seatNumber} lock expired or invalid` });
+            }
+        }
+
+        for (let seatNumber of seats) {
+            const seatIndex = event.seats.findIndex(s => s.seatNumber === seatNumber);
+            if (seatIndex !== -1) {
+                event.seats[seatIndex].isAvailable = false;
+                event.seats[seatIndex].lockedBy = userId;
+            }
+        }
+        await event.save();
+
+        const booking = await Booking.create({
+            user: userId,
+            event: eventId,
+            seats,
+            totalAmount,
+            status: 'confirmed'
+        });
+
+        for (let seatNumber of seats) {
+            const lockKey = `lock:${eventId}:${seatNumber}`;
+            await redisClient.del(lockKey);
+        }
+
+        const io = req.app.get('io');
+        io.emit('seatUpdate', { eventId, seats, status: 'booked' });
+
+        res.status(201).json(booking);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { lockSeat, bookTickets };
