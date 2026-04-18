@@ -6,6 +6,7 @@
     <title>EventEase - Admin Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header class="nav-anim">
@@ -16,7 +17,37 @@
         </nav>
     </header>
     <main>
-        <div class="form-container">
+        <div class="admin-tabs fade-in-anim">
+            <button class="tab-btn active" id="tab-dashboard">Dashboard & Analytics</button>
+            <button class="tab-btn" id="tab-create">Create Event</button>
+        </div>
+
+        <section id="dashboard-section" class="fade-in-anim">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <h3 id="stat-revenue">₹0</h3>
+                    <p>Total Revenue</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="stat-bookings">0</h3>
+                    <p>Total Bookings</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="stat-tickets">0</h3>
+                    <p>Tickets Sold</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="stat-users">0</h3>
+                    <p>Total Users</p>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </section>
+
+        <section id="create-section" class="form-container" style="display: none;">
             <h2>Create New Event</h2>
             <form id="create-event-form">
                 <div class="input-group">
@@ -32,21 +63,19 @@
                     <input type="text" id="category" placeholder="Category (e.g., Concert, Fest)" required>
                 </div>
                 <div class="input-group">
-                    <input type="number" id="price" placeholder="Ticket Price (Rs.)" required>
+                    <input type="number" id="price" placeholder="Ticket Price (₹)" required>
                 </div>
                 <div class="input-group">
                     <input type="number" id="totalSeats" placeholder="Total Seats" required>
                 </div>
                 <button type="submit" class="full-width-btn">Create Event</button>
             </form>
-        </div>
+        </section>
     </main>
     <script src="js/admin.js"></script>
     <script>
         gsap.from(".nav-anim", { y: -50, opacity: 0, duration: 1, ease: "power3.out" });
-        gsap.from(".form-container", { scale: 0.9, opacity: 0, duration: 0.8, ease: "back.out(1.5)", y: 50 });
-        gsap.from(".input-group", { opacity: 0, x: -30, duration: 0.6, stagger: 0.1, delay: 0.3 });
-        gsap.from(".full-width-btn", { opacity: 0, y: 20, duration: 0.6, delay: 0.8 });
+        gsap.from(".fade-in-anim", { opacity: 0, y: 20, duration: 0.8, stagger: 0.2, ease: "power2.out" });
     </script>
 </body>
 </html>
