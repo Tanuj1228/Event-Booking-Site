@@ -24,7 +24,10 @@ async function fetchEvents() {
         });
 
         if(typeof gsap !== 'undefined') {
-            gsap.from(".event-card", { y: 50, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power3.out" });
+            gsap.fromTo(".event-card", 
+                { y: 50, opacity: 0 }, 
+                { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out", clearProps: "all" }
+            );
         }
 
     } catch (error) {
@@ -68,8 +71,11 @@ async function viewEvent(eventId, price) {
         selectedSeats = [];
 
         if(typeof gsap !== 'undefined') {
-            gsap.from(".booking-header-anim", { y: -20, opacity: 0, duration: 0.6 });
-            gsap.from(".seat", { scale: 0, opacity: 0, duration: 0.5, stagger: 0.015, ease: "back.out(1.7)" });
+            gsap.fromTo(".booking-header-anim", { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, clearProps: "all" });
+            gsap.fromTo(".seat", 
+                { scale: 0, opacity: 0 }, 
+                { scale: 1, opacity: 1, duration: 0.5, stagger: 0.015, ease: "back.out(1.7)", clearProps: "all" }
+            );
         }
 
     } catch (error) {
@@ -103,7 +109,10 @@ async function selectSeat(eventId, seatNumber) {
             if (!selectedSeats.includes(seatNumber)) {
                 selectedSeats.push(seatNumber);
                 if(typeof gsap !== 'undefined') {
-                    gsap.to(seatElement, { scale: 1.1, duration: 0.2, yoyo: true, repeat: 1 });
+                    gsap.fromTo(seatElement, 
+                        { scale: 1 }, 
+                        { scale: 1.1, duration: 0.2, yoyo: true, repeat: 1, clearProps: "all" }
+                    );
                 }
             }
             updateBookingUI();
@@ -124,7 +133,10 @@ function updateBookingUI() {
         if (bookingSection.style.display === 'none') {
             bookingSection.style.display = 'block';
             if(typeof gsap !== 'undefined') {
-                gsap.from(bookingSection, { y: 30, opacity: 0, duration: 0.5, ease: "power2.out" });
+                gsap.fromTo(bookingSection, 
+                    { y: 30, opacity: 0 }, 
+                    { y: 0, opacity: 1, duration: 0.5, ease: "power2.out", clearProps: "all" }
+                );
             }
         }
         seatsDisplay.innerText = selectedSeats.join(', ');

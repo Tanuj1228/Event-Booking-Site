@@ -32,9 +32,20 @@
     </main>
     <script src="js/auth.js"></script>
     <script>
-        gsap.from(".auth-container", { scale: 0.9, opacity: 0, duration: 0.8, ease: "back.out(1.5)", y: 50 });
-        gsap.from(".input-group", { opacity: 0, x: -30, duration: 0.6, stagger: 0.1, delay: 0.3 });
-        gsap.from(".full-width-btn", { opacity: 0, y: 20, duration: 0.6, delay: 0.6 });
+        if(typeof gsap !== 'undefined') {
+            gsap.fromTo(".auth-container", 
+                { scale: 0.9, opacity: 0, y: 50 }, 
+                { scale: 1, opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.5)", clearProps: "all" }
+            );
+            gsap.fromTo(".input-group", 
+                { opacity: 0, x: -30 }, 
+                { opacity: 1, x: 0, duration: 0.6, stagger: 0.1, delay: 0.3, clearProps: "all" }
+            );
+            gsap.fromTo(".full-width-btn", 
+                { opacity: 0, y: 20 }, 
+                { opacity: 1, y: 0, duration: 0.6, delay: 0.6, clearProps: "all" }
+            );
+        }
     </script>
 </body>
 </html>

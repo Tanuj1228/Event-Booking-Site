@@ -6,7 +6,7 @@ const { sendBookingConfirmation } = require('../services/emailService');
 
 const lockSeat = async (req, res) => {
     const { eventId, seatNumber } = req.body;
-    const userId = req.user.id;
+    const userId = req.user.id.toString();
     const lockKey = `lock:${eventId}:${seatNumber}`;
 
     try {
@@ -28,7 +28,7 @@ const lockSeat = async (req, res) => {
 
 const bookTickets = async (req, res) => {
     const { eventId, seats, totalAmount } = req.body;
-    const userId = req.user.id;
+    const userId = req.user.id.toString();
 
     try {
         const event = await Event.findById(eventId);
@@ -38,7 +38,7 @@ const bookTickets = async (req, res) => {
             const lockKey = `lock:${eventId}:${seatNumber}`;
             const lockedBy = await redisClient.get(lockKey);
             
-            if (lockedBy !== userId) {
+            if (lockedBy && lockedBy !== userId) {
                 return res.status(400).json({ message: `Seat ${seatNumber} lock expired or invalid` });
             }
         }
@@ -68,13 +68,18 @@ const bookTickets = async (req, res) => {
         const io = req.app.get('io');
         io.emit('seatUpdate', { eventId, seats, status: 'booked' });
 
-        const user = await User.findById(userId);
-        if (user && process.env.SENDGRID_API_KEY) {
-            await sendBookingConfirmation(user.email, user.name, event.name, seats, totalAmount);
+        try {
+            const user = await User.findById(userId);
+            if (user && process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY.startsWith('SG.')) {
+                await sendBookingConfirmation(user.email, user.name, event.name, seats, totalAmount);
+            }
+        } catch (emailError) {
+            console.error('Email error:', emailError);
         }
 
         res.status(201).json(booking);
     } catch (error) {
+        console.error('Booking error:', error);
         res.status(500).json({ message: error.message });
     }
 };
