@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EventEase - Register</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
     <header>
@@ -17,15 +18,26 @@
     </header>
     <main>
         <div class="auth-container">
-            <h2>Register</h2>
+            <h2>Create Account</h2>
             <form id="register-form">
-                <input type="text" id="name" placeholder="Full Name" required style="display: block; margin-bottom: 10px; padding: 8px;">
-                <input type="email" id="email" placeholder="Email" required style="display: block; margin-bottom: 10px; padding: 8px;">
-                <input type="password" id="password" placeholder="Password" required style="display: block; margin-bottom: 10px; padding: 8px;">
-                <button type="submit" style="padding: 10px 15px; cursor: pointer;">Register</button>
+                <div class="input-group">
+                    <input type="text" id="name" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="email" placeholder="Email" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="full-width-btn">Register</button>
             </form>
         </div>
     </main>
     <script src="js/auth.js"></script>
+    <script>
+        gsap.from(".auth-container", { scale: 0.9, opacity: 0, duration: 0.8, ease: "back.out(1.5)", y: 50 });
+        gsap.from(".input-group", { opacity: 0, x: -30, duration: 0.6, stagger: 0.1, delay: 0.3 });
+        gsap.from(".full-width-btn", { opacity: 0, y: 20, duration: 0.6, delay: 0.7 });
+    </script>
 </body>
 </html>

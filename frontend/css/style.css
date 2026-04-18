@@ -1,62 +1,239 @@
-body {
-    font-family: Arial, sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root {
+    --primary: #6C63FF;
+    --primary-hover: #5750D1;
+    --secondary: #4CAF50;
+    --secondary-hover: #45a049;
+    --danger: #FF4B4B;
+    --warning: #FFC107;
+    --dark: #1A1A2E;
+    --light: #F4F4F9;
+    --text: #333333;
+    --card-bg: rgba(255, 255, 255, 0.85);
+}
+
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f9;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    min-height: 100vh;
+    color: var(--text);
+    overflow-x: hidden;
 }
 
 header {
-    background: #333;
-    color: #fff;
-    padding: 1rem 2rem;
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1.2rem 3rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    color: var(--primary);
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-size: 1.8rem;
 }
 
 header nav a {
     color: #fff;
     text-decoration: none;
-    margin: 0 10px;
+    margin: 0 15px;
+    font-weight: 400;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+header nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background-color: var(--primary);
+    transition: width 0.3s ease;
+}
+
+header nav a:hover::after {
+    width: 100%;
+}
+
+header nav a:hover {
+    color: var(--primary);
 }
 
 main {
-    padding: 2rem;
+    padding: 3rem 5%;
+}
+
+.event-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
 }
 
 .event-card {
-    background: #fff;
-    border: 1px solid #ddd;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 5px;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.event-card h3 {
+    color: var(--primary);
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+}
+
+.event-card p {
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.event-card button {
+    margin-top: auto;
+    width: 100%;
+}
+
+button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+}
+
+button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
 }
 
 .seat-map {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
+    gap: 12px;
+    margin-top: 20px;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .seat {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #28a745;
+    background: var(--secondary);
     color: white;
+    font-weight: 600;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.seat:hover:not(.booked):not(.locked) {
+    transform: scale(1.15);
+    background: var(--secondary-hover);
+    box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
 }
 
 .seat.booked {
-    background: #dc3545;
+    background: var(--danger);
     cursor: not-allowed;
+    box-shadow: 0 4px 10px rgba(255, 75, 75, 0.3);
 }
 
 .seat.locked {
-    background: #ffc107;
+    background: var(--warning);
     cursor: not-allowed;
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+    color: #333;
+}
+
+.auth-container, .form-container {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    max-width: 450px;
+    margin: 50px auto;
+    text-align: center;
+}
+
+.auth-container h2, .form-container h2 {
+    color: var(--dark);
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+input, select {
+    width: 100%;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    padding: 15px;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    background: #fdfdfd;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.1);
+    background: white;
+}
+
+.full-width-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    margin-top: 10px;
+}
+
+#booking-section {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    margin-top: 30px;
+    text-align: center;
+}
+
+#booking-section h4 {
+    margin-bottom: 15px;
+    color: var(--dark);
+    font-size: 1.2rem;
 }

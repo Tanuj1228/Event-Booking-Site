@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EventEase - Ticket Booking</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
-    <header>
+    <header class="nav-anim">
         <h1>EventEase</h1>
         <nav id="main-nav">
             <a href="index.html">Home</a>
@@ -16,11 +17,15 @@
         </nav>
     </header>
     <main>
-        <h2>Upcoming Events</h2>
-        <div id="event-list"></div>
+        <h2 class="title-anim" style="text-align: center; margin-bottom: 30px; color: var(--dark);">Upcoming Events</h2>
+        <div id="event-list" class="event-grid"></div>
     </main>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="js/socket.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        gsap.from(".nav-anim", { y: -50, opacity: 0, duration: 1, ease: "power3.out" });
+        gsap.from(".title-anim", { y: 20, opacity: 0, duration: 1, delay: 0.3, ease: "power3.out" });
+    </script>
 </body>
 </html>

@@ -8,19 +8,25 @@ async function fetchEvents() {
         const events = await response.json();
         const eventList = document.getElementById('event-list');
         eventList.innerHTML = '';
+        eventList.className = 'event-grid';
 
         events.forEach(event => {
             const eventDiv = document.createElement('div');
             eventDiv.className = 'event-card';
             eventDiv.innerHTML = `
                 <h3>${event.name}</h3>
-                <p>Venue: ${event.venue}</p>
-                <p>Date: ${new Date(event.date).toLocaleDateString()}</p>
-                <p>Price: Rs. ${event.price}</p>
+                <p><strong>Venue:</strong> ${event.venue}</p>
+                <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
+                <p><strong>Price:</strong> Rs. ${event.price}</p>
                 <button onclick="viewEvent('${event._id}', ${event.price})">View Seats</button>
             `;
             eventList.appendChild(eventDiv);
         });
+
+        if(typeof gsap !== 'undefined') {
+            gsap.from(".event-card", { y: 50, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power3.out" });
+        }
+
     } catch (error) {
         console.error('Error fetching events:', error);
     }
@@ -32,6 +38,8 @@ async function viewEvent(eventId, price) {
         const event = await response.json();
         
         const eventList = document.getElementById('event-list');
+        eventList.className = ''; 
+        
         let seatsHtml = '<div class="seat-map" id="seat-map">';
         
         event.seats.forEach(seat => {
@@ -43,19 +51,27 @@ async function viewEvent(eventId, price) {
         seatsHtml += '</div>';
 
         eventList.innerHTML = `
-            <h3>${event.name} - Seat Selection</h3>
-            <button onclick="fetchEvents()" style="margin-bottom: 10px;">Back to Events</button>
+            <div class="booking-header-anim" style="text-align: center; margin-bottom: 20px;">
+                <h3 style="font-size: 1.8rem; color: var(--primary); margin-bottom: 15px;">${event.name} - Seat Selection</h3>
+                <button onclick="fetchEvents()" style="background: var(--dark);">← Back to Events</button>
+            </div>
             ${seatsHtml}
-            <div id="booking-section" style="margin-top: 20px; display: none;">
-                <h4>Selected Seats: <span id="selected-seats-display">None</span></h4>
-                <h4>Total Amount: Rs. <span id="total-amount-display">0</span></h4>
-                <button onclick="bookTickets('${eventId}')" style="background: #007bff; color: white; padding: 10px; border: none; cursor: pointer;">Confirm Booking</button>
+            <div id="booking-section" style="display: none;">
+                <h4>Selected Seats: <span id="selected-seats-display" style="color: var(--primary);">None</span></h4>
+                <h4>Total Amount: Rs. <span id="total-amount-display" style="color: var(--secondary);">0</span></h4>
+                <button onclick="bookTickets('${eventId}')" class="full-width-btn" style="margin-top: 15px;">Confirm Booking</button>
             </div>
         `;
         
         window.currentEventId = eventId;
         currentEventPrice = price;
         selectedSeats = [];
+
+        if(typeof gsap !== 'undefined') {
+            gsap.from(".booking-header-anim", { y: -20, opacity: 0, duration: 0.6 });
+            gsap.from(".seat", { scale: 0, opacity: 0, duration: 0.5, stagger: 0.015, ease: "back.out(1.7)" });
+        }
+
     } catch (error) {
         console.error('Error fetching event details:', error);
     }
@@ -86,6 +102,9 @@ async function selectSeat(eventId, seatNumber) {
         if (response.ok) {
             if (!selectedSeats.includes(seatNumber)) {
                 selectedSeats.push(seatNumber);
+                if(typeof gsap !== 'undefined') {
+                    gsap.to(seatElement, { scale: 1.1, duration: 0.2, yoyo: true, repeat: 1 });
+                }
             }
             updateBookingUI();
         } else {
@@ -102,7 +121,12 @@ function updateBookingUI() {
     const amountDisplay = document.getElementById('total-amount-display');
 
     if (selectedSeats.length > 0) {
-        bookingSection.style.display = 'block';
+        if (bookingSection.style.display === 'none') {
+            bookingSection.style.display = 'block';
+            if(typeof gsap !== 'undefined') {
+                gsap.from(bookingSection, { y: 30, opacity: 0, duration: 0.5, ease: "power2.out" });
+            }
+        }
         seatsDisplay.innerText = selectedSeats.join(', ');
         amountDisplay.innerText = selectedSeats.length * currentEventPrice;
     } else {
@@ -137,8 +161,6 @@ async function bookTickets(eventId) {
     }
 }
 
-// ... Replace the previous updateNavigation function with this one ...
-
 function updateNavigation() {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user'));
@@ -154,8 +176,8 @@ function updateNavigation() {
         }
         
         navHtml += `
-            <span style="margin-left: 15px; color: #ccc;">Welcome, ${user.name}</span>
-            <a href="#" id="nav-logout" style="margin-left: 15px; color: #ff4d4d;">Logout</a>
+            <span style="margin-left: 15px; color: #ccc;">Welcome, <strong style="color: #fff;">${user.name}</strong></span>
+            <a href="#" id="nav-logout" style="margin-left: 15px; color: var(--danger); font-weight: 600;">Logout</a>
         `;
         
         if (nav) {
