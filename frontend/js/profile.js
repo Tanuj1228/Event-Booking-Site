@@ -13,8 +13,8 @@ function setupNav() {
         navHtml += `<a href="admin.html">Admin Dashboard</a>`;
     }
     navHtml += `
-        <span style="margin-left: 15px; color: #ccc;">Welcome, ${user.name}</span>
-        <a href="#" id="nav-logout" style="margin-left: 15px; color: #ff4d4d;">Logout</a>
+        <span style="margin-left: 15px; color: #ccc;">Welcome, <strong style="color: #fff;">${user.name}</strong></span>
+        <a href="#" id="nav-logout" style="margin-left: 15px; color: var(--danger); font-weight: 600;">Logout</a>
     `;
     nav.innerHTML = navHtml;
 
@@ -38,7 +38,7 @@ async function fetchMyBookings() {
         const bookingsList = document.getElementById('bookings-list');
         
         if (bookings.length === 0) {
-            bookingsList.innerHTML = '<p>You have no bookings yet.</p>';
+            bookingsList.innerHTML = '<p style="text-align: center; width: 100%; color: #777;">You have no bookings yet.</p>';
             return;
         }
 
@@ -51,14 +51,19 @@ async function fetchMyBookings() {
                 <p><strong>Date:</strong> ${new Date(booking.event.date).toLocaleString()}</p>
                 <p><strong>Seats:</strong> ${booking.seats.join(', ')}</p>
                 <p><strong>Total Amount:</strong> Rs. ${booking.totalAmount}</p>
-                <p><strong>Status:</strong> <span style="color: ${booking.status === 'confirmed' ? 'green' : 'orange'}">${booking.status.toUpperCase()}</span></p>
-                <p><small>Booking ID: ${booking._id}</small></p>
+                <p><strong>Status:</strong> <span style="color: ${booking.status === 'confirmed' ? 'var(--secondary)' : 'var(--warning)'}; font-weight: 600;">${booking.status.toUpperCase()}</span></p>
+                <p style="margin-top: 10px; font-size: 0.85rem; color: #888;">Booking ID: ${booking._id}</p>
             `;
             bookingsList.appendChild(bookingDiv);
         });
+
+        if(typeof gsap !== 'undefined') {
+            gsap.from(".event-card", { y: 50, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power3.out" });
+        }
+
     } catch (error) {
         console.error('Error fetching bookings:', error);
-        document.getElementById('bookings-list').innerHTML = '<p>Error loading bookings.</p>';
+        document.getElementById('bookings-list').innerHTML = '<p style="text-align: center; color: var(--danger);">Error loading bookings.</p>';
     }
 }
 
