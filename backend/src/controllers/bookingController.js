@@ -1,6 +1,8 @@
 const Event = require('../models/Event');
 const Booking = require('../models/Booking');
+const User = require('../models/User');
 const { redisClient } = require('../config/redis');
+const { sendBookingConfirmation } = require('../services/emailService');
 
 const lockSeat = async (req, res) => {
     const { eventId, seatNumber } = req.body;
@@ -66,13 +68,16 @@ const bookTickets = async (req, res) => {
         const io = req.app.get('io');
         io.emit('seatUpdate', { eventId, seats, status: 'booked' });
 
+        const user = await User.findById(userId);
+        if (user && process.env.SENDGRID_API_KEY) {
+            await sendBookingConfirmation(user.email, user.name, event.name, seats, totalAmount);
+        }
+
         res.status(201).json(booking);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
-
-// ... existing lockSeat and bookTickets functions ...
 
 const getMyBookings = async (req, res) => {
     try {
