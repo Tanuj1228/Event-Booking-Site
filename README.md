@@ -1,5 +1,5 @@
 <header>
-    <img src="assets/eventeaselogo.png" alt="EventEase Logo" class="logo">
+    <img src="frontend/assets/eventeaselogo.png" alt="EventEase Logo" class="logo">
 </header>
 # EventEase 🎟️
 
