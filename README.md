@@ -1,3 +1,6 @@
+<header>
+    <img src="assets/eventeaselogo.png" alt="EventEase Logo" class="logo">
+</header>
 # EventEase 🎟️
 
 EventEase is a robust, real-time web-based Event Ticket Booking and Seat Management portal. It enables users to browse events, select seats interactively, and securely book tickets while preventing double-booking through high-concurrency controls.
