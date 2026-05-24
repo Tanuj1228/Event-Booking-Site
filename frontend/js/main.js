@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://eventease-backend-0qqu.onrender.com/api';
 let selectedSeats = [];
 let currentEventPrice = 0;
 

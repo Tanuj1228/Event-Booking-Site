@@ -1,4 +1,4 @@
-const socket = io('http://localhost:5000');
+const socket = io('https://eventease-backend-0qqu.onrender.com');
 
 socket.on('connect', () => {
     console.log('Connected to real-time server with ID:', socket.id);
