@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const seatSchema = new mongoose.Schema({
     seatNumber: { type: String, required: true },
     isAvailable: { type: Boolean, default: true },
-    lockedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }
+    lockedBy: { type: String, default: null },
+    lockExpiration: { type: Date, default: null } 
 });
 
 const eventSchema = new mongoose.Schema({
@@ -12,7 +13,18 @@ const eventSchema = new mongoose.Schema({
     date: { type: Date, required: true },
     category: { type: String, required: true },
     price: { type: Number, required: true },
-    seats: [seatSchema]
+    totalSeats: { type: Number, required: true },
+    seats: [seatSchema],
+    organizer: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User',
+        required: true 
+    },
+    status: { 
+        type: String, 
+        enum: ['pending', 'approved', 'rejected'], 
+        default: 'pending' 
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Event', eventSchema);

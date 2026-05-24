@@ -1,21 +1,31 @@
 const Event = require('../models/Event');
 const Booking = require('../models/Booking');
 const User = require('../models/User');
-const { redisClient } = require('../config/redis');
+const QRCode = require('qrcode');
 const { sendBookingConfirmation } = require('../services/emailService');
 
 const lockSeat = async (req, res) => {
     const { eventId, seatNumber } = req.body;
     const userId = req.user.id.toString();
-    const lockKey = `lock:${eventId}:${seatNumber}`;
 
     try {
-        const isLocked = await redisClient.get(lockKey);
-        if (isLocked && isLocked !== userId) {
+        const event = await Event.findById(eventId);
+        if (!event) return res.status(404).json({ message: 'Event not found' });
+
+        const seat = event.seats.find(s => s.seatNumber === seatNumber);
+        if (!seat) return res.status(404).json({ message: 'Seat not found' });
+
+        if (!seat.isAvailable) {
+            return res.status(400).json({ message: 'Seat is already booked' });
+        }
+
+        if (seat.lockedBy && seat.lockedBy !== userId && seat.lockExpiration > new Date()) {
             return res.status(400).json({ message: 'Seat is currently locked by another user' });
         }
 
-        await redisClient.setEx(lockKey, 300, userId); 
+        seat.lockedBy = userId;
+        seat.lockExpiration = new Date(Date.now() + 5 * 60 * 1000); 
+        await event.save();
         
         const io = req.app.get('io');
         io.emit('seatUpdate', { eventId, seatNumber, status: 'locked' });
@@ -35,19 +45,22 @@ const bookTickets = async (req, res) => {
         if (!event) return res.status(404).json({ message: 'Event not found' });
 
         for (let seatNumber of seats) {
-            const lockKey = `lock:${eventId}:${seatNumber}`;
-            const lockedBy = await redisClient.get(lockKey);
+            const seat = event.seats.find(s => s.seatNumber === seatNumber);
+            if (!seat || !seat.isAvailable) {
+                return res.status(400).json({ message: `Seat ${seatNumber} is unavailable` });
+            }
             
-            if (lockedBy && lockedBy !== userId) {
+            if (!seat.lockedBy || seat.lockedBy !== userId || seat.lockExpiration < new Date()) {
                 return res.status(400).json({ message: `Seat ${seatNumber} lock expired or invalid` });
             }
         }
 
         for (let seatNumber of seats) {
-            const seatIndex = event.seats.findIndex(s => s.seatNumber === seatNumber);
-            if (seatIndex !== -1) {
-                event.seats[seatIndex].isAvailable = false;
-                event.seats[seatIndex].lockedBy = userId;
+            const seat = event.seats.find(s => s.seatNumber === seatNumber);
+            if (seat) {
+                seat.isAvailable = false;
+                seat.lockedBy = userId;
+                seat.lockExpiration = null; 
             }
         }
         await event.save();
@@ -60,18 +73,14 @@ const bookTickets = async (req, res) => {
             status: 'confirmed'
         });
 
-        for (let seatNumber of seats) {
-            const lockKey = `lock:${eventId}:${seatNumber}`;
-            await redisClient.del(lockKey);
-        }
-
         const io = req.app.get('io');
         io.emit('seatUpdate', { eventId, seats, status: 'booked' });
 
         try {
             const user = await User.findById(userId);
             if (user && process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY.startsWith('SG.')) {
-                await sendBookingConfirmation(user.email, user.name, event.name, seats, totalAmount);
+                const qrCodeDataURI = await QRCode.toDataURL(booking._id.toString());
+                await sendBookingConfirmation(user.email, user.name, event.name, seats, totalAmount, qrCodeDataURI);
             }
         } catch (emailError) {
             console.error('Email error:', emailError);

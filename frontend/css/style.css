@@ -186,6 +186,7 @@ button:hover {
     max-width: 450px;
     margin: 50px auto;
     text-align: center;
+    width: 100%;
 }
 
 .auth-container h2, .form-container h2 {
@@ -237,7 +238,7 @@ input:focus, select:focus {
     color: var(--dark);
     font-size: 1.2rem;
 }
-/* Append these styles to the bottom of the file */
+
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -275,6 +276,8 @@ input:focus, select:focus {
     border-radius: 15px;
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
     margin-bottom: 40px;
+    width: 100%;
+    overflow-x: auto;
 }
 
 .admin-tabs {
@@ -282,6 +285,7 @@ input:focus, select:focus {
     justify-content: center;
     gap: 15px;
     margin-bottom: 30px;
+    flex-wrap: wrap;
 }
 
 .tab-btn {
@@ -294,4 +298,102 @@ input:focus, select:focus {
 .tab-btn.active {
     background: var(--primary);
     color: white;
+}
+
+#pending-events-list > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+/* Responsive Media Queries */
+@media screen and (max-width: 768px) {
+    header {
+        flex-direction: column;
+        padding: 1rem 1.5rem;
+        gap: 15px;
+    }
+
+    header nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    header nav a {
+        margin: 0 8px;
+        font-size: 0.95rem;
+    }
+
+    main {
+        padding: 2rem 15px;
+    }
+
+    .event-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-container, .form-container {
+        padding: 25px 20px;
+        margin: 30px auto;
+        max-width: 95%;
+    }
+
+    .admin-tabs {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .tab-btn {
+        width: 100%;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .seat-map {
+        padding: 15px;
+        gap: 8px;
+    }
+
+    .seat {
+        width: 40px;
+        height: 40px;
+        font-size: 0.85rem;
+    }
+
+    #pending-events-list > div {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    #pending-events-list > div > div {
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .seat {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1.6rem;
+    }
 }

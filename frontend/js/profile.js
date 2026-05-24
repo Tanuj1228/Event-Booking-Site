@@ -2,22 +2,20 @@ const API_URL = 'http://localhost:5000/api';
 const token = localStorage.getItem('token');
 const user = JSON.parse(localStorage.getItem('user'));
 
-if (!token || !user) {
-    window.location.href = 'login.html';
+// Ensure only logged-in students can access this page
+if (!token || !user || user.role !== 'student') {
+    window.location.href = 'index.html';
 }
 
-function setupNav() {
+function updateNavigation() {
     const nav = document.getElementById('main-nav');
-    let navHtml = `<a href="index.html">Home</a>`;
-    if (user.role === 'admin') {
-        navHtml += `<a href="admin.html">Admin Dashboard</a>`;
-    }
-    navHtml += `
-        <span style="margin-left: 15px; color: #ccc;">Welcome, <strong style="color: #fff;">${user.name}</strong></span>
+    nav.innerHTML = `
+        <a href="index.html">Home</a>
+        <a href="profile.html" style="color: var(--primary); font-weight: bold;">My Bookings</a>
+        <span style="margin-left: 15px; color: #ccc;">Student: <strong style="color: #fff;">${user.name}</strong></span>
         <a href="#" id="nav-logout" style="margin-left: 15px; color: var(--danger); font-weight: 600;">Logout</a>
     `;
-    nav.innerHTML = navHtml;
-
+    
     document.getElementById('nav-logout').addEventListener('click', (e) => {
         e.preventDefault();
         localStorage.removeItem('token');
@@ -26,48 +24,63 @@ function setupNav() {
     });
 }
 
-async function fetchMyBookings() {
+async function loadMyBookings() {
     try {
-        const response = await fetch(`${API_URL}/bookings/mybookings`, {
+        const response = await fetch(`${API_URL}/bookings/my-bookings`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
         
         const bookings = await response.json();
-        const bookingsList = document.getElementById('bookings-list');
-        
+        const list = document.getElementById('bookings-list');
+        list.innerHTML = '';
+
         if (bookings.length === 0) {
-            bookingsList.innerHTML = '<p style="text-align: center; width: 100%; color: #777;">You have no bookings yet.</p>';
+            list.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: white; border-radius: 10px;">
+                    <h3>You haven't booked any tickets yet.</h3>
+                    <button onclick="window.location.href='index.html'" style="margin-top: 15px;">Browse Events</button>
+                </div>`;
             return;
         }
 
         bookings.forEach(booking => {
-            const bookingDiv = document.createElement('div');
-            bookingDiv.className = 'event-card';
-            bookingDiv.innerHTML = `
-                <h3>${booking.event.name}</h3>
-                <p><strong>Venue:</strong> ${booking.event.venue}</p>
-                <p><strong>Date:</strong> ${new Date(booking.event.date).toLocaleString()}</p>
-                <p><strong>Seats:</strong> ${booking.seats.join(', ')}</p>
-                <p><strong>Total Amount:</strong> Rs. ${booking.totalAmount}</p>
-                <p><strong>Status:</strong> <span style="color: ${booking.status === 'confirmed' ? 'var(--secondary)' : 'var(--warning)'}; font-weight: 600;">${booking.status.toUpperCase()}</span></p>
-                <p style="margin-top: 10px; font-size: 0.85rem; color: #888;">Booking ID: ${booking._id}</p>
-            `;
-            bookingsList.appendChild(bookingDiv);
+            const event = booking.event;
+            const div = document.createElement('div');
+            div.className = 'event-card';
+            
+            // Check if the event still exists (in case an admin deleted it)
+            if (!event) {
+                div.innerHTML = `<p style="color: var(--danger);">Event details unavailable (Event may have been cancelled).</p>`;
+            } else {
+                const statusColor = booking.status === 'confirmed' ? 'var(--success)' : 'var(--danger)';
+                const checkInStatus = booking.checkedIn ? 
+                    '<span style="color: var(--success); font-weight: bold;">✅ Checked In</span>' : 
+                    '<span style="color: orange; font-weight: bold;">Not Checked In Yet</span>';
+
+                div.innerHTML = `
+                    <h3>${event.name}</h3>
+                    <p><strong>📍 Venue:</strong> ${event.venue}</p>
+                    <p><strong>📅 Date:</strong> ${new Date(event.date).toLocaleDateString()} at ${new Date(event.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                    <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
+                    <p><strong>🎟️ Seats:</strong> ${booking.seats.join(', ')}</p>
+                    <p><strong>💰 Paid:</strong> ₹${booking.totalAmount}</p>
+                    <div style="margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 5px; text-align: center;">
+                        <p style="margin-bottom: 5px;">Booking Status: <span style="color: ${statusColor}; font-weight: bold;">${booking.status.toUpperCase()}</span></p>
+                        <p>Entry Status: ${checkInStatus}</p>
+                    </div>
+                `;
+            }
+            list.appendChild(div);
         });
-
-        if(typeof gsap !== 'undefined') {
-            gsap.from(".event-card", { y: 50, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power3.out" });
-        }
-
     } catch (error) {
-        console.error('Error fetching bookings:', error);
-        document.getElementById('bookings-list').innerHTML = '<p style="text-align: center; color: var(--danger);">Error loading bookings.</p>';
+        console.error('Error loading bookings:', error);
+        document.getElementById('bookings-list').innerHTML = '<p style="color: red; grid-column: 1/-1; text-align: center;">Error loading bookings. Please try again later.</p>';
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    setupNav();
-    fetchMyBookings();
+    updateNavigation();
+    loadMyBookings();
 });

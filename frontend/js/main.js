@@ -182,7 +182,9 @@ function updateNavigation() {
         let navHtml = `<a href="index.html">Home</a>`;
         
         if (user.role === 'admin') {
-            navHtml += `<a href="admin.html">Admin Dashboard</a>`;
+            navHtml += `<a href="admin.html">Admin Panel</a>`;
+        } else if (user.role === 'organizer') {
+            navHtml += `<a href="organizer.html">Organizer Panel</a>`;
         } else {
             navHtml += `<a href="profile.html">My Bookings</a>`;
         }
@@ -201,7 +203,7 @@ function updateNavigation() {
                     e.preventDefault();
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
-                    window.location.reload();
+                    window.location.href = 'login.html';
                 });
             }
         }

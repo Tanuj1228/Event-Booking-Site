@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
-    <header>
+    <header class="nav-anim">
         <h1>EventEase</h1>
         <nav>
             <a href="index.html">Home</a>
@@ -29,6 +29,14 @@
                 <div class="input-group">
                     <input type="password" id="password" placeholder="Password" required>
                 </div>
+                <div class="input-group">
+                    <select id="role" required>
+                        <option value="" disabled selected>Select Account Type</option>
+                        <option value="student">Student (Book Tickets)</option>
+                        <option value="organizer">Organizer (Host Events)</option>
+                        <option value="admin">Admin (System Management)</option>
+                    </select>
+                </div>
                 <button type="submit" class="full-width-btn">Register</button>
             </form>
         </div>
@@ -38,16 +46,9 @@
         if(typeof gsap !== 'undefined') {
             gsap.fromTo(".auth-container", 
                 { scale: 0.9, opacity: 0, y: 50 }, 
-                { scale: 1, opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.5)", clearProps: "all" }
+                { scale: 1, opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.5)" }
             );
-            gsap.fromTo(".input-group", 
-                { opacity: 0, x: -30 }, 
-                { opacity: 1, x: 0, duration: 0.6, stagger: 0.1, delay: 0.3, clearProps: "all" }
-            );
-            gsap.fromTo(".full-width-btn", 
-                { opacity: 0, y: 20 }, 
-                { opacity: 1, y: 0, duration: 0.6, delay: 0.7, clearProps: "all" }
-            );
+            gsap.from(".nav-anim", { y: -50, opacity: 0, duration: 1, ease: "power3.out" });
         }
     </script>
 </body>

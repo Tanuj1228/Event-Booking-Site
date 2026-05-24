@@ -10,16 +10,14 @@
 </head>
 <body>
     <header class="nav-anim">
-        <h1>EventEase Admin</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="#" id="logout-btn" style="color: var(--danger); font-weight: 600;">Logout</a>
-        </nav>
+        <h1>EventEase System Admin</h1>
+        <nav id="main-nav">
+            </nav>
     </header>
     <main>
         <div class="admin-tabs fade-in-anim">
-            <button class="tab-btn active" id="tab-dashboard">Dashboard & Analytics</button>
-            <button class="tab-btn" id="tab-create">Create Event</button>
+            <button class="tab-btn active" id="tab-dashboard">Analytics Dashboard</button>
+            <button class="tab-btn" id="tab-approvals">Pending Approvals</button>
         </div>
 
         <section id="dashboard-section" class="fade-in-anim">
@@ -38,7 +36,7 @@
                 </div>
                 <div class="stat-card">
                     <h3 id="stat-users">0</h3>
-                    <p>Total Users</p>
+                    <p>Total Students</p>
                 </div>
             </div>
             
@@ -47,35 +45,18 @@
             </div>
         </section>
 
-        <section id="create-section" class="form-container" style="display: none;">
-            <h2>Create New Event</h2>
-            <form id="create-event-form">
-                <div class="input-group">
-                    <input type="text" id="eventName" placeholder="Event Name" required>
+        <section id="approvals-section" style="display: none;" class="fade-in-anim">
+            <h2 style="text-align: center; margin-bottom: 20px;">Pending Events</h2>
+            <div id="pending-events-list">
                 </div>
-                <div class="input-group">
-                    <input type="text" id="venue" placeholder="Venue" required>
-                </div>
-                <div class="input-group">
-                    <input type="datetime-local" id="date" required>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="category" placeholder="Category (e.g., Concert, Fest)" required>
-                </div>
-                <div class="input-group">
-                    <input type="number" id="price" placeholder="Ticket Price (₹)" required>
-                </div>
-                <div class="input-group">
-                    <input type="number" id="totalSeats" placeholder="Total Seats" required>
-                </div>
-                <button type="submit" class="full-width-btn">Create Event</button>
-            </form>
         </section>
     </main>
     <script src="js/admin.js"></script>
     <script>
-        gsap.from(".nav-anim", { y: -50, opacity: 0, duration: 1, ease: "power3.out" });
-        gsap.from(".fade-in-anim", { opacity: 0, y: 20, duration: 0.8, stagger: 0.2, ease: "power2.out" });
+        if(typeof gsap !== 'undefined') {
+            gsap.from(".nav-anim", { y: -50, opacity: 0, duration: 1, ease: "power3.out" });
+            gsap.from(".fade-in-anim", { opacity: 0, y: 20, duration: 0.8, stagger: 0.2, ease: "power2.out" });
+        }
     </script>
 </body>
 </html>
