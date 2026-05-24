@@ -151,7 +151,7 @@ async function bookTickets(eventId) {
     const totalAmount = selectedSeats.length * currentEventPrice;
 
     try {
-        const response = await fetch(`${API_URL}/bookings/book`, {
+        const response = await fetch(`${API_URL}/bookings`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
